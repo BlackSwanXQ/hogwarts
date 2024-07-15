@@ -1,10 +1,10 @@
 package com.example.hogwarts.services;
 
 import com.example.hogwarts.exceptions.StudentNotFoundException;
-import com.example.hogwarts.model.Student;
+import com.example.hogwarts.entity.Student;
+import com.example.hogwarts.repository.FacultyRepository;
 import com.example.hogwarts.repository.StudentRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,11 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -25,6 +23,9 @@ class StudentServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
+    @Mock
+    private FacultyRepository facultyRepository;
+
     @InjectMocks
     private StudentService studentService;
 

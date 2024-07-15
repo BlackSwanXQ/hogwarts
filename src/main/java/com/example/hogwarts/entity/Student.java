@@ -1,24 +1,21 @@
-package com.example.hogwarts.model;
+package com.example.hogwarts.entity;
 
-
-
-
-
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity//(name="name1")
 public class Student {
+
     @Id
-    @GeneratedValue//(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    String name;
-    int age;
+    private int age;
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name="faculty_id")
+    private Faculty faculty;
 
     public Student(int age, String name, Long id) {
         this.age = age;
@@ -53,6 +50,14 @@ public class Student {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
     }
 
     @Override
