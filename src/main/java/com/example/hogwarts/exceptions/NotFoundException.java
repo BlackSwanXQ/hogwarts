@@ -6,6 +6,7 @@ public abstract class NotFoundException extends RuntimeException {
         this.id = id;
     }
 
+
     public long getId() {
         return id;
     }

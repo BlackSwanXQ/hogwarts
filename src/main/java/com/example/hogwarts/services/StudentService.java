@@ -40,6 +40,7 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException(id));
     }
 
+
     public void update(long id, Student student) {
         Student oldStudent = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(id));

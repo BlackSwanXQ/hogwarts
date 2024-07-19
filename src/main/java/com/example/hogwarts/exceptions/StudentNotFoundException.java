@@ -7,6 +7,7 @@ public class StudentNotFoundException extends NotFoundException{
     }
 
 
+
     @Override
     public String getMessage() {
         return "Student with id = %d not found".formatted(getId());

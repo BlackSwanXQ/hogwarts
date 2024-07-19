@@ -43,6 +43,7 @@ public class StudentController {
         return studentService.filterByStudentAge(age);
     }
 
+
     @GetMapping("/all")
     public Collection<Student> getAllFaculty() {
         return studentService.getAllStudents();
