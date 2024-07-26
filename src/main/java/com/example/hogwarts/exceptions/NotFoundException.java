@@ -7,6 +7,7 @@ public abstract class NotFoundException extends RuntimeException {
     }
 
 
+
     public long getId() {
         return id;
     }

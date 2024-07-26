@@ -61,6 +61,7 @@ public class FacultyService {
         return facultyRepository.findAllByColorIgnoreCaseOrNameIgnoreCase(colorOrName, colorOrName);
     }
 
+
     public List<Student> findStudentsByFacultyId(long id) {
         return studentRepository.findAllByFaculty_Id(id);
     }

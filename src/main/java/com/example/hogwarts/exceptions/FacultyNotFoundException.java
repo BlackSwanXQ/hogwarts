@@ -5,6 +5,7 @@ public class FacultyNotFoundException extends NotFoundException {
         super(id);
     }
 
+
     @Override
     public String getMessage() {
         return "Faculty with id = %d not found".formatted(getId());

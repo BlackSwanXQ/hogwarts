@@ -4,35 +4,38 @@ package com.example.hogwarts.entity;
 import jakarta.persistence.*;
 
 @Entity
+//@Table(name= "avatars")
 public class Avatar {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String filePath;
-    private Long fileSize;
+    private long fileSize;
     private String mediaType;
 //    @Lob
+    @Column
     private byte[] data;
 
     @OneToOne
-//    @JoinColumn(name="student_id")
+    @JoinColumn(name="student_id")
     private Student student;
 
-    public Avatar(Long id, String filePath, Long fileSize, String mediaType, byte[] data, Student student) {
-        this.id = id;
-        this.filePath = filePath;
-        this.fileSize = fileSize;
-        this.mediaType = mediaType;
-        this.data = data;
-        this.student = student;
-    }
+//    public Avatar(Long id, String filePath, long fileSize, String mediaType, byte[] data, Student student) {
+//        this.id = id;
+//        this.filePath = filePath;
+//        this.fileSize = fileSize;
+//        this.mediaType = mediaType;
+//        this.data = data;
+//        this.student = student;
+//    }
+//
+//    public Long getId() {
+//        return id;
+//    }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Avatar(){}
+//    public Avatar(){}
 
     public void setId(Long id) {
         this.id = id;
@@ -50,7 +53,7 @@ public class Avatar {
         return fileSize;
     }
 
-    public void setFileSize(Long fileSize) {
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 
