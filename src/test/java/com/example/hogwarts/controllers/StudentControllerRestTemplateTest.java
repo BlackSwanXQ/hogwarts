@@ -94,7 +94,6 @@ class StudentControllerRestTemplateTest {
         Assertions.assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         Assertions.assertThat(forEntity.getBody()).hasSize(2);
         Assertions.assertThat(forEntity.getBody()).containsExactlyInAnyOrder(student1,student2);
-
     }
 
     @Test

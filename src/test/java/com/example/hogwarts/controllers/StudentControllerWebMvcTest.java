@@ -64,7 +64,6 @@ public class StudentControllerWebMvcTest {
     @SpyBean
     private StudentService studentService;
 
-
     @Test
     void createTest() throws Exception {
 

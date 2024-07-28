@@ -36,7 +36,6 @@ class FacultyControllerRestTemplateTest {
     Faculty faculty1 = new Faculty(1L, "fac1", "red");
     Faculty faculty2 = new Faculty(2L, "fac1", "red");
     Faculty faculty3 = new Faculty(3L, "fac3", "green");
-
     @BeforeEach
     void beforeEach() {
         facultyRepository.save(faculty1);

@@ -29,7 +29,6 @@ import java.util.UUID;
 
 import static java.nio.file.Paths.get;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-
 @Service
 //@Transactional
 public class AvatarService {

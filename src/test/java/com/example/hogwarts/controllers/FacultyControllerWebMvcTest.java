@@ -46,7 +46,6 @@ public class FacultyControllerWebMvcTest {
 
 
 
-
     @Test
     void createTest() throws Exception {
         JSONObject userObject = new JSONObject();

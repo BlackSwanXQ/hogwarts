@@ -12,6 +12,4 @@ public class FacultyNotFoundException extends NotFoundException {
     }
 
 
-
-
 }

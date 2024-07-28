@@ -82,5 +82,4 @@ public class StudentService {
         return get(id).getFaculty();
     }
 
-
 }

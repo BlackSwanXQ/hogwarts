@@ -22,7 +22,6 @@ public class AvatarController {
         this.avatarService = avatarService;
     }
 
-
     @PostMapping(value = "/{id}/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadAvatar(@PathVariable Long id,
                              @RequestParam MultipartFile multipartFile) {

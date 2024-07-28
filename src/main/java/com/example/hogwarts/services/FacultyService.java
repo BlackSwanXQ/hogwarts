@@ -33,7 +33,6 @@ public class FacultyService {
         return facultyRepository.findById(id)
                 .orElseThrow(() -> new FacultyNotFoundException(id));
     }
-
     public Faculty update(long id, Faculty faculty) {
         Faculty oldFaculty = facultyRepository.findById(id)
                 .orElseThrow(() -> new FacultyNotFoundException(id));

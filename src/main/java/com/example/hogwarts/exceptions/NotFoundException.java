@@ -12,5 +12,4 @@ public abstract class NotFoundException extends RuntimeException {
         return id;
     }
 
-
 }

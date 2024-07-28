@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 //@Table(name= "avatars")
 public class Avatar {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

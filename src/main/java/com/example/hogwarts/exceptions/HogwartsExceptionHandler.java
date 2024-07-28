@@ -12,7 +12,6 @@ public class HogwartsExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
     }
-
         @ExceptionHandler(AvatarProcessingException.class)
         public ResponseEntity<String> handlerAvatarProcessingException() {
             return ResponseEntity.
