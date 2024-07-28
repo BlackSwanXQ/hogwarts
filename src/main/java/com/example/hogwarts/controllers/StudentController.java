@@ -41,9 +41,9 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable long id,
-                       @RequestBody Student student) {
-        studentService.update(id, student);
+    public Student update(@PathVariable long id,
+                          @RequestBody Student student) {
+        return studentService.update(id, student);
     }
 
     @DeleteMapping("/{id}")
@@ -55,7 +55,6 @@ public class StudentController {
     public List<Student> filterByStudentAge(@RequestParam int age) {
         return studentService.filterByStudentAge(age);
     }
-
 
 
     @GetMapping("/all")

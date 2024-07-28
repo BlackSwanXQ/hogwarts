@@ -34,12 +34,12 @@ public class FacultyService {
                 .orElseThrow(() -> new FacultyNotFoundException(id));
     }
 
-    public void update(long id, Faculty faculty) {
+    public Faculty update(long id, Faculty faculty) {
         Faculty oldFaculty = facultyRepository.findById(id)
                 .orElseThrow(() -> new FacultyNotFoundException(id));
         oldFaculty.setName(faculty.getName());
         oldFaculty.setColor(faculty.getColor());
-        facultyRepository.save(oldFaculty);
+        return facultyRepository.save(oldFaculty);
     }
 
     public Faculty remove(long id) {

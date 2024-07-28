@@ -29,9 +29,9 @@ public class FacultyController {
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable long id,
+    public Faculty update(@PathVariable long id,
                        @RequestBody Faculty faculty) {
-        facultyService.update(id, faculty);
+        return facultyService.update(id, faculty);
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,8 @@
 package com.example.hogwarts.controllers;
 
+import com.example.hogwarts.entity.Faculty;
 import com.example.hogwarts.entity.Student;
+import com.example.hogwarts.repository.StudentRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,117 +11,99 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StudentControllerRestTemplateTest {
 
-    @LocalServerPort
-    private int port;
 
     @Autowired
-    StudentController studentController;
+    private TestRestTemplate restTemplate;
 
     @Autowired
-    TestRestTemplate restTemplate;
+    private StudentRepository studentRepository;
+
+    Student student1 = new Student(30, "st1", null);
+    Student student2 = new Student(30, "st2", null);
+    Student student3 = new Student(45, "st3", null);
+    Student student4 = new Student(52, "st4", null);
+    Student student5 = new Student(55, "st5", null);
 
 
     @BeforeEach
     void beforeEach() {
+        studentRepository.save(student1);
+        studentRepository.save(student2);
+        studentRepository.save(student3);
+        studentRepository.save(student4);
+        studentRepository.save(student5);
     }
 
     @AfterEach
     void afterEach() {
-    }
-
-    @Test
-    void contextLoads() {
-        Assertions.assertThat(studentController).isNotNull();
-    }
-
-    @Test
-    void greet() {
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:"
-                + port + "/student/greet", String.class)).isEqualTo("Hello, World!");
+        studentRepository.deleteAll();
     }
 
     @Test
     void create() {
-        Student student = new Student();
-        student.setName("John");
-        Assertions.assertThat(this.restTemplate.postForObject("http://localhost:"
-                + port + "/student", student, Student.class)).isNotNull();
+        Student student10 = new Student(30, "st10", null);
+        ResponseEntity<Student> forEntity = restTemplate.postForEntity("/student", student10, Student.class);
+        Assertions.assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        Student actual = forEntity.getBody();
+        Assertions.assertThat(actual).isEqualTo(studentRepository.findById(actual.getId()).get());
     }
+
 
     @Test
     void get() {
-        Assertions.assertThat(this.restTemplate.getForObject("http://localhost:"
-                + port + "/student/7", Student.class)).isNotNull();
+        ResponseEntity<Student> forEntity = restTemplate.getForEntity("/student/3", Student.class);
+        Assertions.assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        Assertions.assertThat(forEntity.getBody()).isEqualTo(student3);
     }
 
     @Test
     void update() {
-        Student student = new Student();
-        student.setName("John333");
-        HttpEntity<Student> request = new HttpEntity<Student>(student);
-        ResponseEntity<Student> response = this.restTemplate.exchange("http://localhost:"
-                + port + "/student/{id}", HttpMethod.PUT, request, Student.class, 7);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Student student10 = new Student(11, "st11", 2L);
+        HttpEntity<Student> request = new HttpEntity<Student>(student10);
+        ResponseEntity<Student> forEntity = restTemplate
+                .exchange("/student/2", HttpMethod.PUT, request, Student.class);
+        Assertions.assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        Student actual = forEntity.getBody();
+        Assertions.assertThat(actual).isEqualTo(studentRepository.findById(actual.getId()).get());
     }
 
     @Test
     void deleteStudent() {
         Student student = new Student();
         HttpEntity<Student> request = new HttpEntity<>(student);
-        ResponseEntity<Student> response = this.restTemplate.exchange("http://localhost:"
-                + port + "/student/{id}", HttpMethod.DELETE, request, Student.class, 43);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        ResponseEntity<Student> forEntity = restTemplate
+                .exchange("/student/3", HttpMethod.DELETE, request, Student.class);
+        Assertions.assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        Student actual = forEntity.getBody();
+        Assertions.assertThat(studentRepository.findById(3L)).isEmpty();
+        Assertions.assertThat(actual).isEqualTo(student3);
     }
 
     @Test
     void filterByStudentAgeTest() {
-        Student[] expected = restTemplate.getForObject("http://localhost:"
-                + port + "/student/age?age=20", Student[].class);
-        Assertions.assertThat(expected.length).isEqualTo(2);
-        Assertions.assertThat(expected[0].getAge()).isEqualTo(20);
-    }
+//        ResponseEntity<Student[]> forEntity = restTemplate.getForEntity("/student/age?age=30", Student[].class);
+        ResponseEntity<Student[]> forEntity = restTemplate
+                .exchange("/student/age?age=30", HttpMethod.GET, null, Student[].class);
+        Assertions.assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        Assertions.assertThat(forEntity.getBody()).hasSize(2);
+        Assertions.assertThat(forEntity.getBody()).containsExactlyInAnyOrder(student1,student2);
 
+    }
 
     @Test
     void filterByRangeAge() {
-        Student[] expected = restTemplate.getForObject("http://localhost:"
-                + port + "/student/betweenAge?minAge=30&maxAge=40", Student[].class);
-        Assertions.assertThat(expected.length).isEqualTo(3);
-        Assertions.assertThat(expected[0].getAge()).isBetween(30, 40);
-        Assertions.assertThat(expected[1].getAge()).isBetween(30, 40);
-        Assertions.assertThat(expected[2].getAge()).isBetween(30, 40);
+        ResponseEntity<Student[]> forEntity = restTemplate
+                .exchange("/student/betweenAge?minAge=40&maxAge=60", HttpMethod.GET, null, Student[].class);
+        Assertions.assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        Assertions.assertThat(forEntity.getBody()).hasSize(3);
+        Assertions.assertThat(forEntity.getBody()).containsExactlyInAnyOrder(student3,student4,student5);
     }
 
-    @Test
-    void findStudentFaculty() {
-        Student expected = restTemplate.getForObject("http://localhost:"
-                + port + "/student/5/faculty", Student.class);
-        Assertions.assertThat(expected.getId()).isEqualTo(4);
-    }
-
-    @Test
-    void getAvatarFromFs() {
-        Student student = new Student();
-        HttpEntity<Student> request = new HttpEntity<Student>(student);
-        ResponseEntity<byte[]> response = this.restTemplate.exchange("http://localhost:"
-                + port + "/student/{id}/avatar-from-fs", HttpMethod.GET, request, byte[].class, 3);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    void getAvatarFormDb() {
-        Student student = new Student();
-        HttpEntity<Student> request = new HttpEntity<Student>(student);
-        ResponseEntity<byte[]> response = this.restTemplate.exchange("http://localhost:"
-                + port + "/student/{id}/avatar-from-db", HttpMethod.GET, request, byte[].class, 4);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
 }

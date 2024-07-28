@@ -44,7 +44,7 @@ public class StudentService {
     }
 
 
-    public void update(long id, Student student) {
+    public Student update(long id, Student student) {
         Student oldStudent = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(id));
         Faculty faculty = null;
@@ -55,7 +55,7 @@ public class StudentService {
         oldStudent.setName(student.getName());
         oldStudent.setAge(student.getAge());
         oldStudent.setFaculty(faculty);
-        studentRepository.save(oldStudent);
+        return studentRepository.save(oldStudent);
     }
 
     public Student remove(long id) {

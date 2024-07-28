@@ -38,35 +38,22 @@ public class FacultyControllerWebMvcTest {
     @MockBean
     FacultyRepository facultyRepository;
 
-    @SpyBean
-    FacultyService facultyService;
-
-    @MockBean
-    AvatarService avatarService;
-
-    @MockBean
-    StudentService studentService;
     @MockBean
     StudentRepository studentRepository;
 
+    @SpyBean
+    FacultyService facultyService;
 
-    @InjectMocks
-    FacultyController facultyController;
+
+
 
     @Test
     void createTest() throws Exception {
-        Long id = 1L;
-        String name = "fac1";
-        String color = "red";
-
         JSONObject userObject = new JSONObject();
-        userObject.put("name", name);
-        userObject.put("color", color);
+        userObject.put("name", "fac1");
+        userObject.put("color", "red");
 
-        Faculty faculty = new Faculty();
-        faculty.setId(id);
-        faculty.setName(name);
-        faculty.setColor(color);
+        Faculty faculty = new Faculty(1L, "fac1", "red");
 
         when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
 
@@ -76,38 +63,27 @@ public class FacultyControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.color").value(color));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("fac1"))
+                .andExpect(jsonPath("$.color").value("red"));
     }
 
     @Test
     void getTest() throws Exception {
-        Long id = 1L;
-        String name = "fac1";
-        String color = "red";
-
-        Faculty faculty = new Faculty();
-        faculty.setId(id);
-        faculty.setName(name);
-        faculty.setColor(color);
-
+        Faculty faculty = new Faculty(1L, "fac1", "red");
         when(facultyRepository.findById(any(Long.class))).thenReturn(Optional.of(faculty));
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/faculty/{id}", id)
+                        .get("/faculty/1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.color").value(color));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("fac1"))
+                .andExpect(jsonPath("$.color").value("red"));
     }
 
     @Test
     void updateTest() throws Exception {
-        JSONObject userObject = new JSONObject();
-        userObject.put("name", "fac2");
-        userObject.put("color", "green");
 
         when(facultyRepository.findById(2L)).thenReturn(Optional.of(new Faculty(2L, "fac22", "blue")));
         Faculty faculty = new Faculty(2L, "fac2", "green");
@@ -120,29 +96,23 @@ public class FacultyControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(faculty)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("fac2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(2L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.color").value("green"));
     }
 
     @Test
     void deleteStudent() throws Exception {
-        Long id = 2L;
-        String name = "fac1";
-        String color = "red";
-
-        Faculty faculty = new Faculty();
-        faculty.setId(id);
-        faculty.setName(name);
-        faculty.setColor(color);
-
+        Faculty faculty = new Faculty(2L,"fac2","red");
         when(facultyRepository.findById(2L)).thenReturn(Optional.of(faculty));
-
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/faculty/2")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.color").value(color));
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.name").value("fac2"))
+                .andExpect(jsonPath("$.color").value("red"));
     }
 
     @Test
@@ -158,7 +128,16 @@ public class FacultyControllerWebMvcTest {
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/faculty/colorOrName?colorOrName=fac1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("fac1"));
+                .andExpect(jsonPath("$[0].name").value("fac1"))
+                .andExpect(jsonPath("$[0].color").value("red"))
+                .andExpect(jsonPath("$[0].id").value(1L));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/faculty/colorOrName?colorOrName=red"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[1].name").value("fac2"))
+                .andExpect(jsonPath("$[1].color").value("red"))
+                .andExpect(jsonPath("$[1].id").value(2L));
 
     }
 
@@ -166,14 +145,16 @@ public class FacultyControllerWebMvcTest {
     void findStudentsByFacultyId() throws Exception {
 
         when(studentRepository.findAllByFaculty_Id(2L)).thenReturn(List.of(
-                new Student(30, "st1", 1L),
+                new Student(30, "st1", 2L),
                 new Student(34, "st2", 2L),
-                new Student(42, "st3", 3L)
+                new Student(42, "st3", 2L)
         ));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/faculty/2/students"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[1].name").value("st2"));
+                .andExpect(jsonPath("$[1].name").value("st2"))
+                .andExpect(jsonPath("$[1].id").value(2L))
+                .andExpect(jsonPath("$[1].age").value(34));
     }
 
 }
