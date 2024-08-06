@@ -1,14 +1,17 @@
 package com.example.hogwarts.services;
 
 
+import com.example.hogwarts.dto.AvatarDto;
 import com.example.hogwarts.entity.Avatar;
 import com.example.hogwarts.entity.Student;
 import com.example.hogwarts.exceptions.AvatarProcessingException;
 import com.example.hogwarts.exceptions.StudentNotFoundException;
 import com.example.hogwarts.repository.AvatarRepository;
 import com.example.hogwarts.repository.StudentRepository;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.beans.Transient;
@@ -24,11 +28,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import static java.nio.file.Paths.get;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
+
 @Service
 //@Transactional
 public class AvatarService {
@@ -78,10 +84,25 @@ public class AvatarService {
         try {
             Avatar avatar = avatarRepository.findByStudent_Id(id)
                     .orElseThrow(() -> new StudentNotFoundException(id));
-            return Pair.of(Files.readAllBytes(Paths.get(avatar.getFilePath())),avatar.getMediaType());
+            return Pair.of(Files.readAllBytes(Paths.get(avatar.getFilePath())), avatar.getMediaType());
         } catch (IOException e) {
             throw new AvatarProcessingException();
         }
+    }
+
+    public List<AvatarDto> getAvatars(Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
+        List<Avatar> avatars = avatarRepository.findAll(pageRequest).getContent();
+        return avatars
+                .stream().map(avatar -> new AvatarDto(
+                        avatar.getId(),
+                        avatar.getFilePath(),
+                        avatar.getFileSize(),
+                        avatar.getMediaType(),
+                        "localhost:8080/student/%d/avatar-from-db".formatted(avatar.getStudent().getId()),
+                        avatar.getStudent())
+                ).toList();
+
     }
 
 }

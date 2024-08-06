@@ -1,14 +1,19 @@
 package com.example.hogwarts.controllers;
 
+import com.example.hogwarts.dto.AvatarDto;
 import com.example.hogwarts.entity.Avatar;
 import com.example.hogwarts.services.AvatarService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/avatar")
@@ -26,6 +31,13 @@ public class AvatarController {
     public void uploadAvatar(@PathVariable Long id,
                              @RequestParam MultipartFile multipartFile) {
         avatarService.uploadAvatar(multipartFile, id);
+    }
+
+    @GetMapping("/getAvatars")
+    public List<AvatarDto> getAvatars(@RequestParam Integer pageNumber,
+                                      @RequestParam Integer pageSize) {
+        return avatarService.getAvatars(pageNumber,pageSize);
+
     }
 
 //    @GetMapping("/{id}/database")

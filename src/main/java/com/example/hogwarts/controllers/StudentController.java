@@ -4,6 +4,7 @@ import com.example.hogwarts.entity.Faculty;
 import com.example.hogwarts.entity.Student;
 import com.example.hogwarts.services.AvatarService;
 import com.example.hogwarts.services.StudentService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +32,7 @@ public class StudentController {
     }
 
     @PostMapping
+    @Operation(summary = "create Student")
     public Student create(@RequestBody Student student) {
         return studentService.create(student);
     }
@@ -94,5 +96,19 @@ public class StudentController {
 
     }
 
+    @GetMapping("/amountStudents")
+    public int getAmountStudents() {
+        return studentService.getAmountStudents();
+    }
+
+    @GetMapping("/averageScore")
+    public double getAverageScore() {
+        return studentService.getAverageScore();
+    }
+
+    @GetMapping("/lastStudents")
+    public List<Student> getLastStudents() {
+        return studentService.getLastStudents();
+    }
 
 }

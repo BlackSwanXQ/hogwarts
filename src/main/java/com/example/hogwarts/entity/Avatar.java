@@ -1,6 +1,7 @@
 package com.example.hogwarts.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,7 @@ public class Avatar {
     private String mediaType;
 //    @Lob
     @Column
+    @JsonIgnore
     private byte[] data;
 
     @OneToOne
@@ -38,6 +40,9 @@ public class Avatar {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    public Long getId() {
+        return id;
     }
 
     public String getFilePath() {

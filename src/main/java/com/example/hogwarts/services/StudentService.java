@@ -73,13 +73,25 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public List<Student> filterByRangeAge(int ageMin, int ageMax) {
-        return studentRepository.findByAgeBetween(ageMin, ageMax);
+    public List<Student> filterByRangeAge(int minAge, int maxAge) {
+        return studentRepository.findByAgeBetween(minAge, maxAge);
     }
 
 
     public Faculty findStudentsFaculty(long id) {
         return get(id).getFaculty();
     }
+
+
+    public int getAmountStudents() {
+        return studentRepository.getAmountStudents();
+    }
+
+    public double getAverageScore() {
+        return studentRepository.getAverageScore();
+    }
+        public List<Student> getLastStudents() {
+            return studentRepository.getLastStudents();
+        }
 
 }
