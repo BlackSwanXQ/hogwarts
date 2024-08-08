@@ -13,6 +13,7 @@ ALTER TABLE student
     ADD CONSTRAINT nickname_unique UNIQUE (name);
 
 
+
 -- ALTER TABLE student ADD PRIMARY KEY (name);
 
 ALTER TABLE faculty

@@ -5,6 +5,7 @@ FROM student
          JOIN faculty on student.faculty_id = faculty.id;
 
 
+
 SELECT student.name,
        student.id
 FROM student

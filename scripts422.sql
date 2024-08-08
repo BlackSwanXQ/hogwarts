@@ -54,6 +54,7 @@ FROM persons
          JOIN cars on persons.car_id = cars.id;
 
 
+
 SELECT persons.name,
        persons.age,
        cars.model
