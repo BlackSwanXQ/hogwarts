@@ -70,7 +70,6 @@
         </dependency>
 
 
-
 <!--        for tests Faker-->
         <dependency>
             <groupId>net.datafaker</groupId>
@@ -78,16 +77,20 @@
             <version>2.1.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!--        for liquibase-->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
+
 
     </dependencies>
 
