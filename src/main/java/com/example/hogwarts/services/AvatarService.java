@@ -10,6 +10,8 @@ import com.example.hogwarts.repository.AvatarRepository;
 import com.example.hogwarts.repository.StudentRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.util.Pair;
@@ -50,15 +52,21 @@ public class AvatarService {
         path = get(avatarDirName);
     }
 
+    private final Logger logger = LoggerFactory.getLogger(AvatarService.class);
+
     @Transactional
     public void uploadAvatar(MultipartFile multipartFile, Long id) {
+        logger.info("Was invoked method for upload Avatar for Student with id: " + id);
         try {
             byte[] data = multipartFile.getBytes();
             String extention = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
             Path avatarPath = path.resolve(UUID.randomUUID().toString() + "." + extention);
             Files.write(avatarPath, data);
             Student student = studentRepository.findById(id)
-                    .orElseThrow(() -> new StudentNotFoundException(id));
+                    .orElseThrow(() -> {
+                        logger.error("There is not Student with id = {}", id);
+                        return new StudentNotFoundException(id);
+                    });
             Avatar avatar = avatarRepository.findByStudent_Id(id)
                     .orElseGet(Avatar::new);
             avatar.setStudent(student);
@@ -67,32 +75,47 @@ public class AvatarService {
             avatar.setMediaType(multipartFile.getContentType());
             avatar.setFilePath(avatarPath.toString());
             avatarRepository.save(avatar);
+            logger.debug("Avatar for Student with id {} was uploaded", id);
         } catch (IOException e) {
+            logger.error("Something went wrong: ", e);
             throw new AvatarProcessingException();
         }
     }
 
 
     public Pair<byte[], String> getAvatarFromDb(long id) {
+        logger.info("Was invoked method for getAvatarFromDB with id: {}", id);
         Avatar avatar = avatarRepository.findByStudent_Id(id)
-                .orElseThrow(() -> new StudentNotFoundException(id));
+                .orElseThrow(() -> {
+                    logger.error("There is not Student with id = {}", id);
+                    return new StudentNotFoundException(id);
+                });
+        logger.debug("Avatar for Student with id {} was get", id);
         return Pair.of(avatar.getData(), avatar.getMediaType());
     }
 
 
     public Pair<byte[], String> getAvatarFromFs(long id) {
+        logger.info("Was invoked method for getAvatarFromFs with id: {}", id);
         try {
             Avatar avatar = avatarRepository.findByStudent_Id(id)
-                    .orElseThrow(() -> new StudentNotFoundException(id));
+                    .orElseThrow(() -> {
+                        logger.error("There is not Student with id = {}", id);
+                        return new StudentNotFoundException(id);
+                    });
+            logger.debug("Avatar for Student with id {} was get", id);
             return Pair.of(Files.readAllBytes(Paths.get(avatar.getFilePath())), avatar.getMediaType());
         } catch (IOException e) {
+            logger.error("Something went wrong: ", e);
             throw new AvatarProcessingException();
         }
     }
 
     public List<AvatarDto> getAvatars(Integer pageNumber, Integer pageSize) {
+        logger.info("Was invoked method for getAvatars");
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
         List<Avatar> avatars = avatarRepository.findAll(pageRequest).getContent();
+        logger.debug("Avatars found: {}", avatars.size());
         return avatars
                 .stream().map(avatar -> new AvatarDto(
                         avatar.getId(),

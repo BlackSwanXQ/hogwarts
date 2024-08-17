@@ -57,12 +57,12 @@ public class StudentControllerWebMvcTest {
 
     @MockBean
     FacultyRepository facultyRepository;
-
     @MockBean
     private AvatarService avatarService;
 
     @SpyBean
     private StudentService studentService;
+
 
     @Test
     void createTest() throws Exception {
