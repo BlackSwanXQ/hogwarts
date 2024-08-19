@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.OptionalDouble;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/student")
@@ -109,6 +112,29 @@ public class StudentController {
     @GetMapping("/lastStudents")
     public List<Student> getLastStudents() {
         return studentService.getLastStudents();
+    }
+
+    @GetMapping("/startWithA")
+    public List<Student> getStudentsStartWithA() {
+        return studentService.getStudentsStartWithA();
+    }
+
+    @GetMapping("/averageAgeStream")
+    public double getAverageAgeStream() {
+        return studentService.getAverageAgeStream();
+    }
+
+    @GetMapping("/value")
+    public int integerValue() {
+        int sum = 0;
+        for (int i = 0; i < 10; i++) {
+            long start = System.currentTimeMillis();
+            sum = IntStream.range(0, 1_000_001)
+                    .parallel()
+                    .sum();
+            System.out.println(System.currentTimeMillis() - start);
+        }
+        return sum;
     }
 
 }

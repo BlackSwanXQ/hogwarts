@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -37,28 +38,34 @@ public class FacultyService {
     public Faculty get(long id) {
         logger.info("Was invoked method for get Faculty");
         return facultyRepository.findById(id)
-                .orElseThrow(() -> { logger.error("There is not Faculty with id = " + id);
-                    return new FacultyNotFoundException(id);});
+                .orElseThrow(() -> {
+                    logger.error("There is not Faculty with id = " + id);
+                    return new FacultyNotFoundException(id);
+                });
     }
 
     public Faculty update(long id, Faculty faculty) {
         logger.info("Was invoked method for update Faculty with id = " + id);
         Faculty oldFaculty = facultyRepository.findById(id)
-                .orElseThrow(() -> {logger.warn("There is not Faculty with id = " + id);
-                    return new FacultyNotFoundException(id);});
+                .orElseThrow(() -> {
+                    logger.warn("There is not Faculty with id = " + id);
+                    return new FacultyNotFoundException(id);
+                });
         oldFaculty.setName(faculty.getName());
         oldFaculty.setColor(faculty.getColor());
-        logger.debug("Faculty with id {} was updated",id);
+        logger.debug("Faculty with id {} was updated", id);
         return facultyRepository.save(oldFaculty);
     }
 
     public Faculty remove(long id) {
         logger.info("Was invoked method for remove Faculty with id = " + id);
         Faculty faculty = facultyRepository.findById(id)
-                .orElseThrow(() -> {logger.warn("There is not Faculty with id = " + id);
-                    return new FacultyNotFoundException(id);});
+                .orElseThrow(() -> {
+                    logger.warn("There is not Faculty with id = " + id);
+                    return new FacultyNotFoundException(id);
+                });
         facultyRepository.delete(faculty);
-        logger.debug("Faculty with id {} was removed",id);
+        logger.debug("Faculty with id {} was removed", id);
         return faculty;
     }
 
@@ -80,5 +87,12 @@ public class FacultyService {
     public List<Student> findStudentsByFacultyId(long id) {
         logger.info("Was invoked method for findStudentsByFacultyId: " + id);
         return studentRepository.findAllByFaculty_Id(id);
+    }
+
+    public String findLongestName() {
+        return getAllFaculty().stream()
+                .max(Comparator.comparingInt(n -> n.getName().length()))
+                .get()
+                .getName();
     }
 }
