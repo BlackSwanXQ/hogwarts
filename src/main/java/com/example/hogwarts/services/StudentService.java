@@ -10,9 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.OptionalDouble;
 
 @Service
 public class StudentService {
@@ -27,14 +25,17 @@ public class StudentService {
     }
 
     private final Logger logger = LoggerFactory.getLogger(StudentService.class);
+    public int count = 0;
 
     public Student create(Student student) {
         logger.info("Was invoked method for create Student with name: " + student.getName());
         Faculty faculty = null;
         if (student.getFaculty() != null && student.getFaculty().getId() != null) {
             faculty = facultyRepository.findById(student.getFaculty().getId())
-                    .orElseThrow(() -> {logger.error("There is not such Faculty");
-                        return new FacultyNotFoundException(student.getFaculty().getId());});
+                    .orElseThrow(() -> {
+                        logger.error("There is not such Faculty");
+                        return new FacultyNotFoundException(student.getFaculty().getId());
+                    });
         }
         student.setFaculty(faculty);
         student.setId(null);
@@ -85,7 +86,7 @@ public class StudentService {
         return studentRepository.findAllByAge(age);
     }
 
-    public Collection<Student> getAllStudents() {
+    public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }
 
@@ -119,7 +120,7 @@ public class StudentService {
     public List<Student> getStudentsStartWithA() {
         return getAllStudents()
                 .stream()
-                .filter(s->s.getName().startsWith("A"))
+                .filter(s -> s.getName().startsWith("A"))
                 .toList();
     }
 
@@ -130,4 +131,40 @@ public class StudentService {
                 .orElseThrow();
     }
 
+    public void printStudentsParallel() {
+        printParallel(getAllStudents().get(0).getName());
+        printParallel(getAllStudents().get(1).getName());
+        new Thread(() -> {
+            printParallel(getAllStudents().get(2).getName());
+            printParallel(getAllStudents().get(3).getName());
+        }).start();
+        new Thread(() -> {
+            printParallel(getAllStudents().get(4).getName());
+            printParallel(getAllStudents().get(5).getName());
+        }).start();
+    }
+
+    private void printParallel(String student) {
+        System.out.println(Thread.currentThread().getName() + ": " + student);
+    }
+
+    public void printStudentsSynchronized() {
+        printSynchronized(getAllStudents().get(0).getName());
+        printSynchronized(getAllStudents().get(1).getName());
+        new Thread(() -> {
+            printSynchronized(getAllStudents().get(2).getName());
+            printSynchronized(getAllStudents().get(3).getName());
+        }).start();
+        new Thread(() -> {
+            printSynchronized(getAllStudents().get(4).getName());
+            printSynchronized(getAllStudents().get(5).getName());
+        }).start();
+    }
+
+    private void printSynchronized(String student) {
+        synchronized (StudentService.class) {
+            System.out.println(Thread.currentThread().getName() + ": " + student + " - Counter - " + count);
+        }
+        count++;
+    }
 }

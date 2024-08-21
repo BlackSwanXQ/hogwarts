@@ -62,7 +62,7 @@ public class StudentController {
     }
 
     @GetMapping("/all")
-    public Collection<Student> getAllFaculty() {
+    public List<Student> getAllStudents() {
         return studentService.getAllStudents();
     }
 
@@ -137,4 +137,13 @@ public class StudentController {
         return sum;
     }
 
+    @GetMapping("/students/print-parallel")
+    public void printStudentsParallel() {
+        studentService.printStudentsParallel();
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public void printStudentsSynchronized() {
+        studentService.printStudentsSynchronized();
+    }
 }
